@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Aliya Nikiforova](https://up.htmlacademy.ru/javascript/21/user/289087).
-* Наставник: `Неизвестно`.
+* Наставник: [Виктория Ткаченко](https://htmlacademy.ru/profile/id415969).
 
 ---
 
