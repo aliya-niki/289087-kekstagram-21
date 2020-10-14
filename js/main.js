@@ -83,3 +83,36 @@ const renderPicture = function (picturesNumber) {
 
 
 renderPicture(PICTURES_NUMBER);
+
+
+// Показать первую фотографию из массива объектов в полноразмерном режиме
+// и выводить дополнительную информацию о ней: описание, количество лайков, комментарии и т. д
+
+const bigPicture = document.querySelector(`.big-picture`);
+const bigPictureImg = bigPicture.querySelector(`.big-picture__img`);
+const bigPictureDescription = bigPicture.querySelector(`.social__caption`);
+const bigPictureLikes = bigPicture.querySelector(`.likes-count`);
+const bigPictureComments = bigPicture.querySelector(`.social__comments`);
+const bigPictureSocialCommentsCount = bigPicture.querySelector(`.social__comment-count`);
+const bigPictureCommentsLoader = bigPicture.querySelector(`.comments-loader`);
+const bigPictureCommentsCount = bigPicture.querySelector(`.comments-count`);
+
+const photos = getPhotos(PICTURES_NUMBER);
+const firstPicture = photos[0];
+
+bigPicture.classList.remove(`hidden`);
+bigPictureSocialCommentsCount.classList.add(`hidden`);
+bigPictureCommentsLoader.classList.add(`hidden`);
+document.body.classList.add(`modal-open`);
+
+bigPictureImg.querySelector(`img`).src = firstPicture.url;
+bigPictureLikes.textContent = firstPicture.likes;
+bigPictureCommentsCount.textContent = firstPicture.comments.length;
+bigPictureDescription.textContent = firstPicture.description;
+
+for (let i = 0; i < COMMENTS_NUMBER; i++) {
+  bigPictureComments.querySelectorAll(`.social__comment`)[i].querySelector(`img`).src = firstPicture.comments[i].avatar;
+  bigPictureComments.querySelectorAll(`.social__comment`)[i].querySelector(`img`).alt = firstPicture.comments[i].name;
+  bigPictureComments.querySelectorAll(`.social__comment`)[i].querySelector(`.social__text`).textContent = firstPicture.comments[i].message;
+}
+
