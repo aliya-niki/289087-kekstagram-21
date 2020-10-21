@@ -11,7 +11,6 @@
   const imgPreview = document.querySelector(`.img-upload__preview`);
   const imgPreviewPicture = imgPreview.querySelector(`img`);
 
-  let effectLevelResult;
   effectLevel.classList.add(`hidden`);
 
   effectRadioList.addEventListener(`click`, function (evt) {
@@ -19,33 +18,32 @@
     if (target.matches(`.effects__radio`)) {
       effectLevelVal.style.width = EFFECT_DEFAULT_VALUE + `%`;
       effectLevelPin.style.left = EFFECT_DEFAULT_VALUE + `%`;
-      effectLevelResult = EFFECT_DEFAULT_VALUE;
       effectLevel.classList.remove(`hidden`);
 
 
       switch (target.getAttribute(`id`)) {
         case `effect-chrome`:
           imgPreviewPicture.className = `effects__preview--chrome`;
-          imgPreviewPicture.style.filter = `grayscale(` + effectLevelResult + `%)`;
+          imgPreviewPicture.style.filter = `grayscale(` + EFFECT_DEFAULT_VALUE + `%)`;
           break;
         case `effect-sepia`:
           imgPreviewPicture.className = `effects__preview--sepia`;
-          imgPreviewPicture.style.filter = `sepia(` + effectLevelResult + `%)`;
+          imgPreviewPicture.style.filter = `sepia(` + EFFECT_DEFAULT_VALUE + `%)`;
           break;
         case `effect-marvin`:
           imgPreviewPicture.className = `effects__preview--marvin`;
-          imgPreviewPicture.style.filter = `invert(` + effectLevelResult + `%)`;
+          imgPreviewPicture.style.filter = `invert(` + EFFECT_DEFAULT_VALUE + `%)`;
           break;
         case `effect-phobos`:
           const maxBlur = 3;
           imgPreviewPicture.className = `effects__preview--phobos`;
-          imgPreviewPicture.style.filter = `blur(` + Math.round(maxBlur * effectLevelResult / 100) + `px)`;
+          imgPreviewPicture.style.filter = `blur(` + Math.round(maxBlur * EFFECT_DEFAULT_VALUE / 100) + `px)`;
           break;
         case `effect-heat`:
           const minBrightness = 1;
           const maxBrightness = 3;
           imgPreviewPicture.className = `effects__preview--heat`;
-          imgPreviewPicture.style.filter = `brightness(` + (minBrightness + (maxBrightness - minBrightness) * effectLevelResult / 100) + `)`;
+          imgPreviewPicture.style.filter = `brightness(` + (minBrightness + (maxBrightness - minBrightness) * EFFECT_DEFAULT_VALUE / 100) + `)`;
           break;
         default:
           imgPreviewPicture.className = `effect-preview--none`;
@@ -76,8 +74,8 @@
         effectLevelPin.style.left = (effectLevelPin.offsetLeft - shiftX) + `px`;
       }
 
+      let effectLevelResult = Math.round(100 * effectLevelPin.offsetLeft / effectLevelLine.offsetWidth);
       effectLevelVal.style.width = effectLevelPin.style.left;
-      effectLevelResult = Math.round(100 * effectLevelPin.offsetLeft / effectLevelLine.offsetWidth);
       effectLevelInput.setAttribute(`value`, effectLevelResult.toString());
 
       switch (imgPreviewPicture.className) {
