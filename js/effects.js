@@ -5,18 +5,26 @@
   const effectLevel = document.querySelector(`.effect-level`);
   const effectLevelPin = document.querySelector(`.effect-level__pin`);
   const effectLevelLine = document.querySelector(`.effect-level__line`);
-  const effectLevelVal = document.querySelector(`.effect-level__depth`);
+  const effectLevelValue = document.querySelector(`.effect-level__depth`);
   const effectLevelInput = document.querySelector(`.effect-level__value`);
   const effectRadioList = document.querySelector(`.effects`);
-  const imgPreview = document.querySelector(`.img-upload__preview`);
-  const imgPreviewPicture = imgPreview.querySelector(`img`);
 
   effectLevel.classList.add(`hidden`);
+
+  const imgPreviewPicture = document.querySelector(`.img-upload__preview img`);
+
+  const setDefaultEffect = function () {
+    effectRadioList.querySelector(`#effect-none`).checked = true;
+    imgPreviewPicture.className = `effect-preview--none`;
+    imgPreviewPicture.style.filter = `none`;
+    effectLevel.classList.add(`hidden`);
+    effectLevelInput.setAttribute(`value`, EFFECT_DEFAULT_VALUE.toString());
+  };
 
   effectRadioList.addEventListener(`click`, function (evt) {
     let target = evt.target;
     if (target.matches(`.effects__radio`)) {
-      effectLevelVal.style.width = EFFECT_DEFAULT_VALUE + `%`;
+      effectLevelValue.style.width = EFFECT_DEFAULT_VALUE + `%`;
       effectLevelPin.style.left = EFFECT_DEFAULT_VALUE + `%`;
       effectLevel.classList.remove(`hidden`);
 
@@ -63,6 +71,7 @@
       moveEvt.preventDefault();
 
       let shiftX = startX - moveEvt.clientX;
+      let effectLevelResult;
 
       startX = moveEvt.clientX;
 
@@ -74,8 +83,8 @@
         effectLevelPin.style.left = (effectLevelPin.offsetLeft - shiftX) + `px`;
       }
 
-      let effectLevelResult = Math.round(100 * effectLevelPin.offsetLeft / effectLevelLine.offsetWidth);
-      effectLevelVal.style.width = effectLevelPin.style.left;
+      effectLevelValue.style.width = effectLevelPin.style.left;
+      effectLevelResult = Math.round(100 * effectLevelPin.offsetLeft / effectLevelLine.offsetWidth);
       effectLevelInput.setAttribute(`value`, effectLevelResult.toString());
 
       switch (imgPreviewPicture.className) {
@@ -110,4 +119,8 @@
     document.addEventListener(`mousemove`, onMouseMove);
     document.addEventListener(`mouseup`, onMouseUp);
   });
+
+  window.effects = {
+    setDefaultEffect: setDefaultEffect
+  };
 })();
