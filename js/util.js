@@ -18,7 +18,16 @@
 
   const shuffleArray = function (array) {
     let newArray = [];
-    array.forEach((item) => newArray.push(item));
+
+    const evenUrl = function (photo1, photo2) {
+      return photo1.url === photo2.url;
+    };
+
+    array.forEach(function (photo) {
+      if (!newArray.some(evenUrl)) {
+        newArray.push(photo);
+      }
+    });
 
     for (let i = newArray.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * i);
@@ -26,6 +35,7 @@
       newArray[i] = newArray[j];
       newArray[j] = temp;
     }
+
     return newArray;
   };
 

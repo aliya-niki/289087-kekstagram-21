@@ -743,7 +743,7 @@ main {
   border-radius: 5px;
 }
 
-.text__hashtags:not(:placeholder-shown):invalid {
+.text__hashtags:invalid {
   border-color: #900;
   background-color: #FDD;
 }
