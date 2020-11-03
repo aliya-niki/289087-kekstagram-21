@@ -151,7 +151,7 @@
     fragment.appendChild(successMessage);
     main.appendChild(fragment);
 
-    const successCloseBtn = successMessage.querySelector(`.success__button`);
+    const successCloseButton = successMessage.querySelector(`.success__button`);
 
     const onMessageEscPress = function (evt) {
       if (evt.key === `Escape`) {
@@ -171,7 +171,7 @@
 
     document.addEventListener(`keydown`, onMessageEscPress);
     document.addEventListener(`click`, closeHandler);
-    successCloseBtn.addEventListener(`click`, function () {
+    successCloseButton.addEventListener(`click`, function () {
       successMessage.remove();
     });
   };
