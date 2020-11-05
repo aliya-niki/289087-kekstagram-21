@@ -1,47 +1,63 @@
 'use strict';
 
 (function () {
-  const DEBOUNCE_INTERVAL = 500; // ms
+  const ESC_KEY = `Escape`;
 
-  const debounce = function (cb) {
+  const StatusCode = {
+    OK: 200,
+    CREATED: 201
+  };
+
+  const DEBOUNCE_INTERVAL = 500;
+
+  const debounce = (cb) => {
     let lastTimeout = null;
 
-    return function (...parameters) {
+    return (...parameters) => {
       if (lastTimeout) {
         window.clearTimeout(lastTimeout);
       }
-      lastTimeout = window.setTimeout(function () {
+      lastTimeout = window.setTimeout(() => {
         cb(...parameters);
       }, DEBOUNCE_INTERVAL);
     };
   };
 
-  const shuffleArray = function (array) {
-    let newArray = [];
+  const isUrlsEqual = (photo1, photo2) => {
+    return photo1.url === photo2.url;
+  };
 
-    const evenUrl = function (photo1, photo2) {
-      return photo1.url === photo2.url;
-    };
+  const shuffle = (elements) => {
+    let newElements = [];
 
-    array.forEach(function (photo) {
-      if (!newArray.some(evenUrl)) {
-        newArray.push(photo);
+    elements.forEach((photo) => {
+      if (!newElements.some(isUrlsEqual)) {
+        newElements.push(photo);
       }
     });
 
-    for (let i = newArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * i);
-      const temp = newArray[i];
-      newArray[i] = newArray[j];
-      newArray[j] = temp;
+    for (let i = newElements.length - 1; i > 0; i--) {
+      const randomIndex = Math.floor(Math.random() * i);
+      const temporaryElement = newElements[i];
+      newElements[i] = newElements[randomIndex];
+      newElements[randomIndex] = temporaryElement;
     }
 
-    return newArray;
+    return newElements;
+  };
+
+  const isEscEvent = (evt, action) => {
+    if (evt.key === ESC_KEY) {
+      action();
+    }
   };
 
   window.utils = {
-    debounce: debounce,
-    shuffleArray: shuffleArray
+    debounce,
+    shuffle,
+    isEscEvent,
+    ESC_KEY,
+    StatusCode
   };
 })();
 

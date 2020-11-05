@@ -3,27 +3,24 @@
 (function () {
   const URL = `https://21.javascript.pages.academy/kekstagram/data`;
   const TIMEOUT_IN_MS = 10000;
-  const StatusCode = {
-    OK: 200
-  };
 
-  window.load = function (onSuccess, onError) {
+  const load = (onSuccess, onError) => {
     let xhr = new XMLHttpRequest();
     xhr.responseType = `json`;
 
-    xhr.addEventListener(`load`, function () {
-      if (xhr.status === StatusCode.OK) {
+    xhr.addEventListener(`load`, () => {
+      if (xhr.status === window.utils.StatusCode.OK) {
         onSuccess(xhr.response);
-      } else {
-        onError(`Статус ответа: ` + xhr.status + ` ` + xhr.statusText);
+        return;
       }
+      onError(`Статус ответа: ` + xhr.status + ` ` + xhr.statusText);
     });
 
-    xhr.addEventListener(`error`, function () {
+    xhr.addEventListener(`error`, () => {
       onError(`Произошла ошибка соединения`);
     });
 
-    xhr.addEventListener(`timeout`, function () {
+    xhr.addEventListener(`timeout`, () => {
       onError(`Запрос не успел выполниться за ` + xhr.timeout + ` мс`);
     });
     xhr.timeout = TIMEOUT_IN_MS;
@@ -33,7 +30,7 @@
     xhr.send();
   };
 
-  const errorHandler = function (onError) {
+  const errorHandler = (onError) => {
     let node = document.createElement(`div`);
     node.style = `z-index: 100; margin: 0 auto; text-align: center; background-color: red;`;
     node.style.position = `absolute`;
@@ -45,9 +42,9 @@
     document.body.insertAdjacentElement(`afterbegin`, node);
   };
 
-  const successHandler = function (data) {
+  const successHandler = (data) => {
     window.gallery.onLoadRenderPictures(data);
   };
 
-  window.load(successHandler, errorHandler);
+  load(successHandler, errorHandler);
 })();

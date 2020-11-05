@@ -1,82 +1,96 @@
 'use strict';
 
 (function () {
-  const onLoadRenderPictures = function (photos) {
+  const picturesContainer = document.querySelector(`.pictures`);
+  const pictureTemplate = document.querySelector(`#picture`)
+        .content
+        .querySelector(`.picture`);
+  const galleryFilter = document.querySelector(`.img-filters`);
+  const galleryFilterButtons = document.querySelectorAll(`.img-filters__button`);
+  let photos;
+
+  const onLoadRenderPictures = (data) => {
+    photos = data;
+
+    photos.map((photo, index) => {
+      photo.index = `${index}`;
+    });
+
+    picturesContainer.addEventListener(`click`, (evt) => {
+      let target = evt.target;
+      if (target.matches(`.picture img`)) {
+        evt.preventDefault();
+        let index = target.closest(`.picture`).getAttribute(`data-index`);
+        window.preview.open(photos[index]);
+      }
+    });
+
     renderPictures(photos);
-    showFilters(photos);
+    showFilters();
   };
 
-  const renderPictures = function (photos) {
-    const picturesContainer = document.querySelector(`.pictures`);
-
-    picturesContainer.querySelectorAll(`.picture`).forEach((n) => n.remove());
+  const renderPictures = (anyPhotos) => {
+    picturesContainer.querySelectorAll(`.picture`).forEach((picture) => {
+      return picture.remove();
+    });
 
     let fragment = document.createDocumentFragment();
 
-    for (let i = 0; i < photos.length; i++) {
-      const picture = getPicture(photos[i]);
-
-      picture.addEventListener(`click`, function (evt) {
-        evt.preventDefault();
-        window.preview.openPreview(photos[i]);
-      });
-
+    anyPhotos.forEach((photo) => {
+      const picture = getPicture(photo);
       fragment.appendChild(picture);
-    }
+    });
 
     picturesContainer.appendChild(fragment);
   };
 
-  const getPicture = function (photo) {
-    const pictureTemplate = document.querySelector(`#picture`)
-          .content
-          .querySelector(`.picture`);
+  const getPicture = (photo) => {
     let pictureElement = pictureTemplate.cloneNode(true);
     pictureElement.querySelector(`.picture__img`).src = photo.url;
     pictureElement.querySelector(`.picture__img`).alt = photo.description;
     pictureElement.querySelector(`.picture__comments`).textContent = photo.comments.length;
     pictureElement.querySelector(`.picture__likes`).textContent = photo.likes;
+    pictureElement.dataset.index = photo.index;
     return pictureElement;
   };
 
-  const showFilters = function (photos) {
-    const galleryFilter = document.querySelector(`.img-filters`);
-    const galleryFilterButtons = document.querySelectorAll(`.img-filters__button`);
+  const sortByComments = (left, right) => {
+    return right.comments.length - left.comments.length;
+  };
 
-    galleryFilter.classList.remove(`img-filters--inactive`);
+  const filterGallery = (evt) => {
+    evt.preventDefault();
+    let target = evt.target;
 
-    const filterGallery = function (evt) {
-      evt.preventDefault();
-      let target = evt.target;
+    if (target.matches(`.img-filters__button`)) {
+      galleryFilterButtons.forEach((element) => {
+        element.classList.remove(`img-filters__button--active`);
+      });
 
-      const sortByComments = function (a, b) {
-        return b.comments.length - a.comments.length;
-      };
-
-      if (target.matches(`.img-filters__button`)) {
-        galleryFilterButtons.forEach((n) => n.classList.remove(`img-filters__button--active`));
-
-        target.classList.add(`img-filters__button--active`);
-        switch (target.id) {
-          case `filter-random` :
-            let randomTenPhotos = window.utils.shuffleArray(photos).slice(0, 10);
-            renderPictures(randomTenPhotos);
-            break;
-          case `filter-discussed` :
-            let discussedPhotos = photos.slice().sort(sortByComments);
-            renderPictures(discussedPhotos);
-            break;
-          default:
-            renderPictures(photos);
-            break;
-        }
+      target.classList.add(`img-filters__button--active`);
+      switch (target.id) {
+        case `filter-random` :
+          let randomTenPhotos = window.utils.shuffle(photos).slice(0, 10);
+          renderPictures(randomTenPhotos);
+          break;
+        case `filter-discussed` :
+          let discussedPhotos = photos.slice().sort(sortByComments);
+          renderPictures(discussedPhotos);
+          break;
+        default:
+          renderPictures(photos);
+          break;
       }
-    };
+    }
+  };
+
+  const showFilters = () => {
+    galleryFilter.classList.remove(`img-filters--inactive`);
 
     galleryFilter.addEventListener(`click`, window.utils.debounce(filterGallery));
   };
 
   window.gallery = {
-    onLoadRenderPictures: onLoadRenderPictures
+    onLoadRenderPictures
   };
 })();

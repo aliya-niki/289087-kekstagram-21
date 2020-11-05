@@ -3,38 +3,49 @@
 (function () {
   const DEFAULT_IMG_SCALE = 100;
   const HASHTAGS_MAX_NUMBER = 5;
-  const REGEX_HASHTAGS = /^(#)[a-zA-Z0-9]{1,19}$/i;
+  const REGEX_HASHTAGS = /^(#)[a-zA-Zа-яА-ЯёЁ0-9]{1,19}$/i;
   const FILE_TYPES = [`gif`, `jpg`, `jpeg`, `png`];
   const fileUploadInput = document.querySelector(`#upload-file`);
   const cancelUploadButton = document.querySelector(`#upload-cancel`);
   const imgUpload = document.querySelector(`.img-upload__overlay`);
-  const imgPreview = document.querySelector(`.img-upload__preview`);
+  const imgPreview = document.querySelector(`.img-upload__preview img`);
   const imgEffectPreviews = document.querySelectorAll(`.effects__preview`);
   const commentsInput = document.querySelector(`.text__description`);
   const hashtagInput = document.querySelector(`.text__hashtags`);
   const imgUploadForm = document.querySelector(`#upload-select-image`);
+  const effectRadioList = document.querySelector(`.effects`);
+  const effectLevelPin = document.querySelector(`.effect-level__pin`);
+  const scaleSmallerButton = document.querySelector(`.scale__control--smaller`);
+  const scaleBiggerButton = document.querySelector(`.scale__control--bigger`);
   const main = document.querySelector(`main`);
 
-  const clearForm = function () {
+  const clearForm = () => {
     fileUploadInput.value = ``;
-    window.effects.setDefaultEffect();
-    window.imgScale.changeScaleValues(imgPreview, DEFAULT_IMG_SCALE);
+    window.effects.setDefault();
+    window.imgScale.changeValues(imgPreview, DEFAULT_IMG_SCALE);
     hashtagInput.value = ``;
     commentsInput.value = ``;
     hashtagInput.setCustomValidity(``);
   };
 
-  const closeForm = function () {
+  const closeForm = () => {
     imgUpload.classList.add(`hidden`);
     document.body.classList.remove(`modal-open`);
 
-    document.removeEventListener(`keydown`, onFormEscPress);
-    cancelUploadButton.removeEventListener(`click`, cancelFileUpload);
     clearForm();
+
+    document.removeEventListener(`keydown`, onFormEscPress);
+    cancelUploadButton.removeEventListener(`click`, closeForm);
+    imgUploadForm.removeEventListener(`submit`, submitHandler);
+    hashtagInput.removeEventListener(`input`, hashtagInputHandler);
+    scaleSmallerButton.removeEventListener(`click`, window.imgScale.setSmaller);
+    scaleBiggerButton.removeEventListener(`click`, window.imgScale.setBigger);
+    effectLevelPin.removeEventListener(`mousedown`, window.effects.onMouseDown);
+    effectRadioList.removeEventListener(`click`, window.effects.change);
   };
 
-  const onFormEscPress = function (evt) {
-    if (evt.key === `Escape` &&
+  const onFormEscPress = (evt) => {
+    if (evt.key === window.utils.ESC_KEY &&
         !hashtagInput.matches(`:focus`) &&
         !commentsInput.matches(`:focus`) &&
         !document.contains(document.querySelector(`.error`))) {
@@ -43,26 +54,22 @@
     }
   };
 
-  const cancelFileUpload = function () {
-    closeForm();
-  };
-
-  const openForm = function () {
+  const openForm = () => {
     imgUpload.classList.remove(`hidden`);
     document.body.classList.add(`modal-open`);
 
     let file = fileUploadInput.files[0];
     let fileName = file.name.toLowerCase();
-    let matches = FILE_TYPES.some(function (it) {
-      return fileName.endsWith(it);
+    let matches = FILE_TYPES.some((ending) => {
+      return fileName.endsWith(ending);
     });
     if (matches) {
       let reader = new FileReader();
 
-      reader.addEventListener(`load`, function () {
-        imgPreview.querySelector(`img`).src = reader.result;
-        imgEffectPreviews.forEach(function (n) {
-          n.style.backgroundImage = `url(` + reader.result + `)`;
+      reader.addEventListener(`load`, () => {
+        imgPreview.src = reader.result;
+        imgEffectPreviews.forEach((effectPreview) => {
+          effectPreview.style.backgroundImage = `url(` + reader.result + `)`;
         });
       });
 
@@ -70,16 +77,18 @@
     }
 
     document.addEventListener(`keydown`, onFormEscPress);
-    cancelUploadButton.addEventListener(`click`, cancelFileUpload);
+    cancelUploadButton.addEventListener(`click`, closeForm);
+    imgUploadForm.addEventListener(`submit`, submitHandler);
+    hashtagInput.addEventListener(`input`, hashtagInputHandler);
+    scaleSmallerButton.addEventListener(`click`, window.imgScale.setSmaller);
+    scaleBiggerButton.addEventListener(`click`, window.imgScale.setBigger);
+    effectLevelPin.addEventListener(`mousedown`, window.effects.onMouseDown);
+    effectRadioList.addEventListener(`click`, window.effects.change);
   };
 
-  fileUploadInput.addEventListener(`change`, openForm);
-
-  hashtagInput.addEventListener(`input`, function () {
+  const hashtagInputHandler = () => {
     let validityMessage = ``;
-    let hashtags = [];
-
-    hashtags = hashtagInput.value.split(/\s+/).filter(function (word) {
+    let hashtags = hashtagInput.value.split(/\s+/).filter((word) => {
       return word !== ` ` && word !== ``;
     });
 
@@ -103,84 +112,62 @@
 
     hashtagInput.setCustomValidity(validityMessage);
     hashtagInput.reportValidity();
-  });
+  };
 
-
-  const errorHandler = function () {
-    const errorMessageTemplate = document.querySelector(`#error`)
-          .content
-          .querySelector(`.error`);
-    let errorMessage = errorMessageTemplate.cloneNode(true);
+  const renderMessage = (messageTemplate) => {
+    let message = messageTemplate.cloneNode(true);
     let fragment = document.createDocumentFragment();
-    fragment.appendChild(errorMessage);
+    fragment.appendChild(message);
     main.appendChild(fragment);
-    errorMessage.style.zIndex = `2`;
+    message.style.zIndex = `2`;
 
-    const errorCloseButton = errorMessage.querySelector(`.error__button`);
+    const closeButton = message.querySelector(`button`);
 
-    const onMessageEscPress = function (evt) {
-      if (evt.key === `Escape`) {
-        errorMessage.remove();
-      }
+    const removeMessage = () => {
+      message.remove();
       document.removeEventListener(`keydown`, onMessageEscPress);
+      document.removeEventListener(`click`, closeHandler);
     };
 
-    const closeHandler = function (evt) {
-      if (evt.target.matches(`section.error`)) {
-        errorMessage.remove();
+    const onMessageEscPress = (evt) => {
+      window.utils.isEscEvent(evt, removeMessage);
+    };
+
+    const closeHandler = (evt) => {
+      if (evt.target.matches(`section`)) {
+        removeMessage();
       }
-      document.removeEventListener(`click`, closeHandler);
     };
 
     document.addEventListener(`keydown`, onMessageEscPress);
     document.addEventListener(`click`, closeHandler);
-    errorCloseButton.addEventListener(`click`, function () {
-      errorMessage.remove();
-    });
+    closeButton.addEventListener(`click`, removeMessage);
   };
 
-  const successHandler = function () {
+  const errorHandler = () => {
+    const errorMessageTemplate = document.querySelector(`#error`)
+          .content
+          .querySelector(`.error`);
+
+    renderMessage(errorMessageTemplate);
+  };
+
+  const successHandler = () => {
     imgUpload.classList.add(`hidden`);
     document.body.classList.remove(`modal-open`);
 
     const successMessageTemplate = document.querySelector(`#success`)
           .content
           .querySelector(`.success`);
-    let successMessage = successMessageTemplate.cloneNode(true);
-    let fragment = document.createDocumentFragment();
-    fragment.appendChild(successMessage);
-    main.appendChild(fragment);
 
-    const successCloseButton = successMessage.querySelector(`.success__button`);
-
-    const onMessageEscPress = function (evt) {
-      if (evt.key === `Escape`) {
-        successMessage.remove();
-      }
-      document.removeEventListener(`keydown`, onMessageEscPress);
-    };
-
-    const closeHandler = function (evt) {
-      if (evt.target.matches(`section.success`)) {
-        successMessage.remove();
-      }
-      document.removeEventListener(`click`, closeHandler);
-    };
-
+    renderMessage(successMessageTemplate);
     clearForm();
-
-    document.addEventListener(`keydown`, onMessageEscPress);
-    document.addEventListener(`click`, closeHandler);
-    successCloseButton.addEventListener(`click`, function () {
-      successMessage.remove();
-    });
   };
 
-  const submitHandler = function (evt) {
-    window.upload.upload(new FormData(imgUploadForm), successHandler, errorHandler);
+  const submitHandler = (evt) => {
+    window.upload.sendData(new FormData(imgUploadForm), successHandler, errorHandler);
     evt.preventDefault();
   };
 
-  imgUploadForm.addEventListener(`submit`, submitHandler);
-
+  fileUploadInput.addEventListener(`change`, openForm);
 })();

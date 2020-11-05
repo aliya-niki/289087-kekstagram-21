@@ -3,16 +3,20 @@
 (function () {
   const URL = `https://21.javascript.pages.academy/kekstagram`;
 
-  const upload = function (data, onSuccess, onError) {
+  const sendData = (data, onSuccess, onError) => {
     let xhr = new XMLHttpRequest();
 
     xhr.responseType = `json`;
 
-    xhr.addEventListener(`load`, function () {
-      onSuccess(xhr.response);
+    xhr.addEventListener(`load`, () => {
+      if (xhr.status === window.utils.StatusCode.OK || xhr.status === window.utils.StatusCode.CREATED) {
+        onSuccess(xhr.response);
+        return;
+      }
+      onError(`Статус ответа: ` + xhr.status + ` ` + xhr.statusText);
     });
 
-    xhr.addEventListener(`error`, function () {
+    xhr.addEventListener(`error`, () => {
       onError(`Произошла ошибка соединения`);
     });
 
@@ -21,6 +25,6 @@
   };
 
   window.upload = {
-    upload: upload
+    sendData
   };
 })();
