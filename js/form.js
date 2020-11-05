@@ -104,7 +104,7 @@
     }
 
     for (let i = 0; i < hashtags.length; i++) {
-      if (hashtags.indexOf(hashtags[i]) !== i) {
+      if (hashtags.indexOf(hashtags[i].toLowerCase) !== i) {
         validityMessage += `Хэштеги не должны повторяться. `;
         break;
       }
