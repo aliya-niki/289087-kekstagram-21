@@ -20,7 +20,7 @@
       let target = evt.target;
       if (target.matches(`.picture img`)) {
         evt.preventDefault();
-        let index = target.closest(`.picture`).getAttribute(`data-index`);
+        let index = target.closest(`.picture`).dataset.index;
         window.preview.open(photos[index]);
       }
     });
