@@ -41,7 +41,7 @@
     scaleSmallerButton.removeEventListener(`click`, window.imgScale.setSmaller);
     scaleBiggerButton.removeEventListener(`click`, window.imgScale.setBigger);
     effectLevelPin.removeEventListener(`mousedown`, window.effects.onMouseDown);
-    effectRadioList.removeEventListener(`click`, window.effects.change);
+    effectRadioList.removeEventListener(`click`, window.effects.changeType);
   };
 
   const onFormEscPress = (evt) => {
@@ -83,7 +83,7 @@
     scaleSmallerButton.addEventListener(`click`, window.imgScale.setSmaller);
     scaleBiggerButton.addEventListener(`click`, window.imgScale.setBigger);
     effectLevelPin.addEventListener(`mousedown`, window.effects.onMouseDown);
-    effectRadioList.addEventListener(`click`, window.effects.change);
+    effectRadioList.addEventListener(`click`, window.effects.changeType);
   };
 
   const hashtagInputHandler = () => {

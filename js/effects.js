@@ -14,6 +14,45 @@
   const imgPreviewPicture = document.querySelector(`.img-upload__preview img`);
   let startX;
 
+  const Effects = {
+    chrome: {
+      className: `effects__preview--chrome`,
+      styleFilter: (value) => {
+        return `grayscale(` + value / 100 + `)`;
+      },
+    },
+    sepia: {
+      className: `effects__preview--sepia`,
+      styleFilter: (value) => {
+        return `sepia(` + value / 100 + `)`;
+      }
+    },
+    marvin: {
+      className: `effects__preview--marvin`,
+      styleFilter: (value) => {
+        return `invert(` + value + `%)`;
+      }
+    },
+    phobos: {
+      className: `effects__preview--phobos`,
+      styleFilter: (value) => {
+        return `blur(` + MAX_BLUR * value / 100 + `px)`;
+      }
+    },
+    heat: {
+      className: `effects__preview--heat`,
+      styleFilter: (value) => {
+        return `brightness(` + (MIN_BRIGHTNESS + (MAX_BRIGHTNESS - MIN_BRIGHTNESS) * value / 100) + `)`;
+      }
+    },
+    none: {
+      className: `effect-preview--none`,
+      styleFilter: () => {
+        return `none`;
+      }
+    }
+  };
+
   effectLevel.classList.add(`hidden`);
 
   const setDefault = () => {
@@ -24,39 +63,18 @@
     effectLevelInput.value = EFFECT_DEFAULT_VALUE.toString();
   };
 
-  const change = (evt) => {
+  const changeType = (evt) => {
     let target = evt.target;
     if (target.matches(`.effects__radio`)) {
       effectLevelValue.style.width = EFFECT_DEFAULT_VALUE + `%`;
       effectLevelPin.style.left = EFFECT_DEFAULT_VALUE + `%`;
       effectLevel.classList.remove(`hidden`);
 
-      switch (target.id) {
-        case `effect-chrome`:
-          imgPreviewPicture.className = `effects__preview--chrome`;
-          imgPreviewPicture.style.filter = `grayscale(` + EFFECT_DEFAULT_VALUE / 100 + `)`;
-          break;
-        case `effect-sepia`:
-          imgPreviewPicture.className = `effects__preview--sepia`;
-          imgPreviewPicture.style.filter = `sepia(` + EFFECT_DEFAULT_VALUE / 100 + `)`;
-          break;
-        case `effect-marvin`:
-          imgPreviewPicture.className = `effects__preview--marvin`;
-          imgPreviewPicture.style.filter = `invert(` + EFFECT_DEFAULT_VALUE + `%)`;
-          break;
-        case `effect-phobos`:
-          imgPreviewPicture.className = `effects__preview--phobos`;
-          imgPreviewPicture.style.filter = `blur(` + MAX_BLUR * EFFECT_DEFAULT_VALUE / 100 + `px)`;
-          break;
-        case `effect-heat`:
-          imgPreviewPicture.className = `effects__preview--heat`;
-          imgPreviewPicture.style.filter = `brightness(` + (MIN_BRIGHTNESS + (MAX_BRIGHTNESS - MIN_BRIGHTNESS) * EFFECT_DEFAULT_VALUE / 100) + `)`;
-          break;
-        default:
-          imgPreviewPicture.className = `effect-preview--none`;
-          imgPreviewPicture.style.filter = `none`;
-          effectLevel.classList.add(`hidden`);
-          break;
+      imgPreviewPicture.className = Effects[target.value].className;
+      imgPreviewPicture.style.filter = Effects[target.value].styleFilter(EFFECT_DEFAULT_VALUE);
+      imgPreviewPicture.dataset.effect = target.value;
+      if (target.value === `none`) {
+        effectLevel.classList.add(`hidden`);
       }
     }
   };
@@ -81,26 +99,7 @@
     effectLevelResult = Math.round(100 * effectLevelPin.offsetLeft / effectLevelLine.offsetWidth);
     effectLevelInput.value = effectLevelResult.toString();
 
-    switch (imgPreviewPicture.className) {
-      case `effects__preview--chrome`:
-        imgPreviewPicture.style.filter = `grayscale(` + effectLevelResult / 100 + `)`;
-        break;
-      case `effects__preview--sepia`:
-        imgPreviewPicture.style.filter = `sepia(` + effectLevelResult / 100 + `)`;
-        break;
-      case `effects__preview--marvin`:
-        imgPreviewPicture.style.filter = `invert(` + effectLevelResult + `%)`;
-        break;
-      case `effects__preview--phobos`:
-        imgPreviewPicture.style.filter = `blur(` + MAX_BLUR * effectLevelResult / 100 + `px)`;
-        break;
-      case `effects__preview--heat`:
-        imgPreviewPicture.style.filter = `brightness(` + (MIN_BRIGHTNESS + (MAX_BRIGHTNESS - MIN_BRIGHTNESS) * effectLevelResult / 100) + `)`;
-        break;
-      default:
-        imgPreviewPicture.style.filter = `none`;
-        break;
-    }
+    imgPreviewPicture.style.filter = Effects[imgPreviewPicture.dataset.effect].styleFilter(effectLevelResult);
   };
 
   const onMouseUp = (upEvt) => {
@@ -120,7 +119,7 @@
 
   window.effects = {
     setDefault,
-    change,
+    changeType,
     onMouseDown
   };
 })();
