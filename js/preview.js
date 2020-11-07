@@ -1,6 +1,6 @@
 'use strict';
 
-(function () {
+(() => {
   const NEW_COMMENTS_MAX_NUMBER = 5;
   const preview = document.querySelector(`.big-picture`);
   const closePreviewButton = document.querySelector(`#picture-cancel`);
@@ -43,8 +43,10 @@
     }
   };
 
-  const onPreviewEscPress = (evt) => {
-    window.utils.isEscEvent(evt, closePreview);
+  const previewEscHandler = (evt) => {
+    if (window.utils.isEscEvent(evt)) {
+      closePreview();
+    }
   };
 
   const closePreview = () => {
@@ -53,7 +55,7 @@
     previewCommentsLoader.classList.remove(`hidden`);
 
     previewCommentsLoader.removeEventListener(`click`, showComments);
-    document.removeEventListener(`keydown`, onPreviewEscPress);
+    document.removeEventListener(`keydown`, previewEscHandler);
     closePreviewButton.removeEventListener(`click`, closePreview);
   };
 
@@ -71,7 +73,7 @@
     });
 
     closePreviewButton.addEventListener(`click`, closePreview);
-    document.addEventListener(`keydown`, onPreviewEscPress);
+    document.addEventListener(`keydown`, previewEscHandler);
 
     previewCommentsLoader.addEventListener(`click`, showComments);
 

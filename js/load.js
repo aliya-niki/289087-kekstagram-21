@@ -1,6 +1,6 @@
 'use strict';
 
-(function () {
+(() => {
   const URL = `https://21.javascript.pages.academy/kekstagram/data`;
   const TIMEOUT_IN_MS = 10000;
 
@@ -43,7 +43,7 @@
   };
 
   const successHandler = (data) => {
-    window.gallery.onLoadRenderPictures(data);
+    window.gallery.photosLoadHandler(data);
   };
 
   load(successHandler, errorHandler);

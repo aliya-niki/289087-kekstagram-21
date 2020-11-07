@@ -1,6 +1,6 @@
 'use strict';
 
-(function () {
+(() => {
   const picturesContainer = document.querySelector(`.pictures`);
   const pictureTemplate = document.querySelector(`#picture`)
         .content
@@ -9,7 +9,7 @@
   const galleryFilterButtons = document.querySelectorAll(`.img-filters__button`);
   let photos;
 
-  const onLoadRenderPictures = (data) => {
+  const photosLoadHandler = (data) => {
     photos = data;
 
     photos.map((photo, index) => {
@@ -58,7 +58,7 @@
     return right.comments.length - left.comments.length;
   };
 
-  const filterGallery = (evt) => {
+  const gallerFilterHandler = (evt) => {
     evt.preventDefault();
     let target = evt.target;
 
@@ -87,10 +87,10 @@
   const showFilters = () => {
     galleryFilter.classList.remove(`img-filters--inactive`);
 
-    galleryFilter.addEventListener(`click`, window.utils.debounce(filterGallery));
+    galleryFilter.addEventListener(`click`, window.utils.debounce(gallerFilterHandler));
   };
 
   window.gallery = {
-    onLoadRenderPictures
+    photosLoadHandler
   };
 })();

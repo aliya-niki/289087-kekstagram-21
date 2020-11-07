@@ -1,6 +1,6 @@
 'use strict';
 
-(function () {
+(() => {
   const EFFECT_DEFAULT_VALUE = 100;
   const MAX_BLUR = 3;
   const MIN_BRIGHTNESS = 1;
@@ -63,7 +63,7 @@
     effectLevelInput.value = EFFECT_DEFAULT_VALUE.toString();
   };
 
-  const changeType = (evt) => {
+  const typeChangeHandler = (evt) => {
     let target = evt.target;
     if (target.matches(`.effects__radio`)) {
       effectLevelValue.style.width = EFFECT_DEFAULT_VALUE + `%`;
@@ -79,7 +79,7 @@
     }
   };
 
-  const onMouseMove = (moveEvt) => {
+  const mouseMoveHandler = (moveEvt) => {
     moveEvt.preventDefault();
 
     let shiftX = startX - moveEvt.clientX;
@@ -102,24 +102,24 @@
     imgPreviewPicture.style.filter = Effects[imgPreviewPicture.dataset.effect].styleFilter(effectLevelResult);
   };
 
-  const onMouseUp = (upEvt) => {
+  const mouseUpHandler = (upEvt) => {
     upEvt.preventDefault();
 
-    document.removeEventListener(`mousemove`, onMouseMove);
-    document.removeEventListener(`mouseup`, onMouseUp);
+    document.removeEventListener(`mousemove`, mouseMoveHandler);
+    document.removeEventListener(`mouseup`, mouseUpHandler);
   };
 
-  const onMouseDown = (evt) => {
+  const mouseDownHandler = (evt) => {
     evt.preventDefault();
     startX = evt.clientX;
 
-    document.addEventListener(`mousemove`, onMouseMove);
-    document.addEventListener(`mouseup`, onMouseUp);
+    document.addEventListener(`mousemove`, mouseMoveHandler);
+    document.addEventListener(`mouseup`, mouseUpHandler);
   };
 
   window.effects = {
     setDefault,
-    changeType,
-    onMouseDown
+    typeChangeHandler,
+    mouseDownHandler
   };
 })();

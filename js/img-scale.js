@@ -1,6 +1,6 @@
 'use strict';
 
-(function () {
+(() => {
   const DEFAULT_IMG_SCALE = 100;
   const MAX_IMG_SCALE = 100;
   const MIN_IMG_SCALE = 25;

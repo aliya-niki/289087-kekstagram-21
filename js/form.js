@@ -1,6 +1,6 @@
 'use strict';
 
-(function () {
+(() => {
   const DEFAULT_IMG_SCALE = 100;
   const HASHTAGS_MAX_NUMBER = 5;
   const REGEX_HASHTAGS = /^(#)[a-zA-Zа-яА-ЯёЁ0-9]{1,19}$/i;
@@ -34,18 +34,18 @@
 
     clearForm();
 
-    document.removeEventListener(`keydown`, onFormEscPress);
+    document.removeEventListener(`keydown`, formEscPressHandler);
     cancelUploadButton.removeEventListener(`click`, closeForm);
     imgUploadForm.removeEventListener(`submit`, submitHandler);
     hashtagInput.removeEventListener(`input`, hashtagInputHandler);
     scaleSmallerButton.removeEventListener(`click`, window.imgScale.setSmaller);
     scaleBiggerButton.removeEventListener(`click`, window.imgScale.setBigger);
-    effectLevelPin.removeEventListener(`mousedown`, window.effects.onMouseDown);
-    effectRadioList.removeEventListener(`click`, window.effects.changeType);
+    effectLevelPin.removeEventListener(`mousedown`, window.effects.mouseDownHandler);
+    effectRadioList.removeEventListener(`click`, window.effects.typeChangeHandler);
   };
 
-  const onFormEscPress = (evt) => {
-    if (evt.key === window.utils.ESC_KEY &&
+  const formEscPressHandler = (evt) => {
+    if (window.utils.isEscEvent(evt) &&
         !hashtagInput.matches(`:focus`) &&
         !commentsInput.matches(`:focus`) &&
         !document.contains(document.querySelector(`.error`))) {
@@ -76,14 +76,14 @@
       reader.readAsDataURL(file);
     }
 
-    document.addEventListener(`keydown`, onFormEscPress);
+    document.addEventListener(`keydown`, formEscPressHandler);
     cancelUploadButton.addEventListener(`click`, closeForm);
     imgUploadForm.addEventListener(`submit`, submitHandler);
     hashtagInput.addEventListener(`input`, hashtagInputHandler);
     scaleSmallerButton.addEventListener(`click`, window.imgScale.setSmaller);
     scaleBiggerButton.addEventListener(`click`, window.imgScale.setBigger);
-    effectLevelPin.addEventListener(`mousedown`, window.effects.onMouseDown);
-    effectRadioList.addEventListener(`click`, window.effects.changeType);
+    effectLevelPin.addEventListener(`mousedown`, window.effects.mouseDownHandler);
+    effectRadioList.addEventListener(`click`, window.effects.typeChangeHandler);
   };
 
   const hashtagInputHandler = () => {
@@ -98,13 +98,15 @@
 
     for (let i = 0; i < hashtags.length; i++) {
       if (!REGEX_HASHTAGS.test(hashtags[i])) {
-        validityMessage += `Неверный формат хэштега. `;
+        validityMessage += `Неверный формат: начинайте с # и используйте только буквы и цифры, всего до 20 символов`;
         break;
       }
     }
 
     for (let i = 0; i < hashtags.length; i++) {
-      if (hashtags.indexOf(hashtags[i].toLowerCase) !== i) {
+      if (hashtags.slice().map((hashtag) => {
+        return hashtag.toLowerCase();
+      }).indexOf(hashtags[i].toLowerCase()) !== i) {
         validityMessage += `Хэштеги не должны повторяться. `;
         break;
       }
@@ -125,12 +127,14 @@
 
     const removeMessage = () => {
       message.remove();
-      document.removeEventListener(`keydown`, onMessageEscPress);
+      document.removeEventListener(`keydown`, messageEscPressHandler);
       document.removeEventListener(`click`, closeHandler);
     };
 
-    const onMessageEscPress = (evt) => {
-      window.utils.isEscEvent(evt, removeMessage);
+    const messageEscPressHandler = (evt) => {
+      if (window.utils.isEscEvent(evt)) {
+        removeMessage();
+      }
     };
 
     const closeHandler = (evt) => {
@@ -139,7 +143,7 @@
       }
     };
 
-    document.addEventListener(`keydown`, onMessageEscPress);
+    document.addEventListener(`keydown`, messageEscPressHandler);
     document.addEventListener(`click`, closeHandler);
     closeButton.addEventListener(`click`, removeMessage);
   };
