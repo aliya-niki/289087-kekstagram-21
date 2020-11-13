@@ -1,87 +1,86 @@
 'use strict';
 
-(() => {
-  const NEW_COMMENTS_MAX_NUMBER = 5;
-  const preview = document.querySelector(`.big-picture`);
-  const closePreviewButton = document.querySelector(`#picture-cancel`);
-  const previewCommentsLoader = preview.querySelector(`.social__comments-loader`);
-  const previewImg = preview.querySelector(`.big-picture__img`);
-  const previewDescription = preview.querySelector(`.social__caption`);
-  const previewLikes = preview.querySelector(`.likes-count`);
-  const previewCommentsCount = preview.querySelector(`.comments-count`);
-  const previewComments = preview.querySelector(`.social__comments`);
-  const previewLoadedComments = preview.querySelector(`.comments-count--loaded`);
-  const commentTemplate = document.querySelector(`#social-comment`)
+const NEW_COMMENTS_MAX_NUMBER = 5;
+const preview = document.querySelector(`.big-picture`);
+const closePreviewButton = document.querySelector(`#picture-cancel`);
+const previewCommentsLoader = preview.querySelector(`.social__comments-loader`);
+const previewImg = preview.querySelector(`.big-picture__img`);
+const previewDescription = preview.querySelector(`.social__caption`);
+const previewLikes = preview.querySelector(`.likes-count`);
+const previewCommentsCount = preview.querySelector(`.comments-count`);
+const previewComments = preview.querySelector(`.social__comments`);
+const previewLoadedComments = preview.querySelector(`.comments-count--loaded`);
+const commentTemplate = document.querySelector(`#social-comment`)
         .content
         .querySelector(`.social__comment`);
-  let comments;
+let comments;
 
-  const renderComment = (comment) => {
-    let newComment = commentTemplate.cloneNode(true);
-    newComment.querySelector(`img`).src = comment.avatar;
-    newComment.querySelector(`img`).alt = comment.name;
-    newComment.querySelector(`.social__text`).textContent = comment.message;
+const renderComment = (comment) => {
+  let newComment = commentTemplate.cloneNode(true);
+  newComment.querySelector(`img`).src = comment.avatar;
+  newComment.querySelector(`img`).alt = comment.name;
+  newComment.querySelector(`.social__text`).textContent = comment.message;
 
-    let fragment = document.createDocumentFragment();
-    fragment.appendChild(newComment);
+  let fragment = document.createDocumentFragment();
+  fragment.appendChild(newComment);
 
-    previewComments.appendChild(fragment);
-  };
+  previewComments.appendChild(fragment);
+};
 
-  const showComments = () => {
-    let currentLength = previewComments.querySelectorAll(`.social__comment`).length;
+const showCommentsHandler = () => {
+  let currentLength = previewComments.querySelectorAll(`.social__comment`).length;
 
-    for (let j = currentLength; j < Math.min(comments.length, currentLength + NEW_COMMENTS_MAX_NUMBER); j++) {
-      renderComment(comments[j]);
-    }
+  for (let j = currentLength; j < Math.min(comments.length, currentLength + NEW_COMMENTS_MAX_NUMBER); j++) {
+    renderComment(comments[j]);
+  }
 
-    previewLoadedComments.textContent = Math.min(comments.length, currentLength + NEW_COMMENTS_MAX_NUMBER);
+  previewLoadedComments.textContent = Math.min(comments.length, currentLength + NEW_COMMENTS_MAX_NUMBER);
 
-    if (comments.length === previewComments.querySelectorAll(`.social__comment`).length) {
-      previewCommentsLoader.removeEventListener(`click`, showComments);
-      previewCommentsLoader.classList.add(`hidden`);
-    }
-  };
+  if (comments.length === previewComments.querySelectorAll(`.social__comment`).length) {
+    previewCommentsLoader.removeEventListener(`click`, showCommentsHandler);
+    previewCommentsLoader.classList.add(`hidden`);
+  }
+};
 
-  const previewEscHandler = (evt) => {
-    if (window.utils.isEscEvent(evt)) {
-      closePreview();
-    }
-  };
+const previewEscHandler = (evt) => {
+  if (window.utils.isEscEvent(evt)) {
+    closePreviewHandler();
+  }
+};
 
-  const closePreview = () => {
-    preview.classList.add(`hidden`);
-    document.body.classList.remove(`modal-open`);
-    previewCommentsLoader.classList.remove(`hidden`);
+const closePreviewHandler = () => {
+  preview.classList.add(`hidden`);
+  document.body.classList.remove(`modal-open`);
+  previewCommentsLoader.classList.remove(`hidden`);
 
-    previewCommentsLoader.removeEventListener(`click`, showComments);
-    document.removeEventListener(`keydown`, previewEscHandler);
-    closePreviewButton.removeEventListener(`click`, closePreview);
-  };
+  previewCommentsLoader.removeEventListener(`click`, showCommentsHandler);
+  document.removeEventListener(`keydown`, previewEscHandler);
+  closePreviewButton.removeEventListener(`click`, closePreviewHandler);
+};
 
-  const openPreview = (photo) => {
-    preview.classList.remove(`hidden`);
-    document.body.classList.add(`modal-open`);
+const openPreview = (photo) => {
+  preview.classList.remove(`hidden`);
+  document.body.classList.add(`modal-open`);
 
-    previewImg.querySelector(`img`).src = photo.url;
-    previewLikes.textContent = photo.likes;
-    previewCommentsCount.textContent = photo.comments.length;
-    previewDescription.textContent = photo.description;
+  previewImg.querySelector(`img`).src = photo.url;
+  previewLikes.textContent = photo.likes;
+  previewCommentsCount.textContent = photo.comments.length;
+  previewDescription.textContent = photo.description;
 
-    previewComments.querySelectorAll(`.social__comment`).forEach((comment) => {
-      comment.remove();
-    });
+  previewComments.querySelectorAll(`.social__comment`).forEach((comment) => {
+    comment.remove();
+  });
 
-    closePreviewButton.addEventListener(`click`, closePreview);
-    document.addEventListener(`keydown`, previewEscHandler);
+  closePreviewButton.addEventListener(`click`, closePreviewHandler);
+  document.addEventListener(`keydown`, previewEscHandler);
 
-    previewCommentsLoader.addEventListener(`click`, showComments);
+  previewCommentsLoader.addEventListener(`click`, showCommentsHandler);
 
-    comments = photo.comments;
-    showComments(comments);
-  };
+  comments = photo.comments;
+  showCommentsHandler(comments);
+};
 
-  window.preview = {
-    open: openPreview
-  };
-})();
+window.preview = {
+  open: openPreview
+};
+
