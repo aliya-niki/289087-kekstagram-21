@@ -1,6 +1,6 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
-* Студент: [Aliya Nikiforova](https://up.htmlacademy.ru/javascript/21/user/289087).
+* Студент: [Aliya](https://up.htmlacademy.ru/javascript/21/user/289087).
 * Наставник: [Дина Абрамова](https://htmlacademy.ru/profile/id1483099).
 
 ---
